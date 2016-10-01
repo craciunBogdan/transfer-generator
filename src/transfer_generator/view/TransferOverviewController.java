@@ -63,7 +63,7 @@ public class TransferOverviewController {
 	private Label valueLabel;
 
 	@FXML
-	private Hyperlink tmPageHyperlink; 
+	private Hyperlink tmPageHyperlink;
 
 	@FXML
 	private Label playerFullNameLabel;
@@ -88,7 +88,7 @@ public class TransferOverviewController {
 
 	@FXML
 	private Button nextTargetButton;
-	
+
 	/**
 	 * The constructor.
 	 */
@@ -213,35 +213,33 @@ public class TransferOverviewController {
 
 	@FXML
 	private void tmPageHyperlinkAction() {
-		try {
-			Desktop.getDesktop().browse(new URL(this.tmLink).toURI());
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Error");
-			alert.setHeaderText("Unexpected error!");
-			alert.setContentText("Unexpected error when generating transfer targets. (MalformedURLException)");
+		if (Desktop.isDesktopSupported()) {
+			new Thread(() -> {
+				try {
+					Desktop.getDesktop().browse(new URL(this.tmLink).toURI());
+				} catch (IOException e){
+					e.printStackTrace();
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("Unexpected error!");
+					alert.setContentText("Unexpected error when generating transfer targets. (IOExcpetion)");
 
-			alert.showAndWait();
-		} catch (IOException e) {
-			e.printStackTrace();
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Error");
-			alert.setHeaderText("Unexpected error!");
-			alert.setContentText("Unexpected error when generating transfer targets. (IOExcpetion)");
+					alert.showAndWait();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("Unexpected error!");
+					alert.setContentText("Unexpected error when generating transfer targets. (URISyntaxException)");
 
-			alert.showAndWait();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Error");
-			alert.setHeaderText("Unexpected error!");
-			alert.setContentText("Unexpected error when generating transfer targets. (URISyntaxException)");
-
-			alert.showAndWait();
+					alert.showAndWait();
+				} 
+			}).start();
+		} else {
+			System.out.println("well fuck");
 		}
 	}
-	
+
 	/**
 	 * Method that converts the value integer into something more readable (i.e.
 	 * 12000000 to £12.0m)
@@ -304,8 +302,11 @@ public class TransferOverviewController {
 	}
 
 	/**
-	 * Method that sets the MainApp. Should only be called from MainApp to get a reference to itself.
-	 * @param mainApp The MainApp.
+	 * Method that sets the MainApp. Should only be called from MainApp to get a
+	 * reference to itself.
+	 * 
+	 * @param mainApp
+	 *            The MainApp.
 	 */
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
